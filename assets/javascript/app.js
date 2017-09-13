@@ -40,12 +40,36 @@ $("#addTrain").on("click", function(event) {
 		}
 	}
 
-	if (inputName === ""){}
-	else if (inputDestination === "") {}
-	else if (inputFrequency === "") {}
-	else if (inputTime === "") {}
-	else if (inputTime.length !== 5) {}
-	else if (valid !== 5) {}
+	var freq = 0;
+	for (var i = 0; i < inputFrequency.length; i++) {
+		for (var j = 0; j < numbers.length; j++) {
+			if (inputFrequency[i] === numbers[j]) {
+				freq++;
+			}
+		}
+	}
+
+	if (inputName === ""){
+		$("#message").html(" Enter Name");
+	}
+	else if (inputDestination === "") {
+		$("#message").html(" Enter Destination");
+	}
+	else if (inputTime === "") {
+		$("#message").html(" Enter First Time");
+	}
+	else if (inputTime.length !== 5) {
+		$("#message").html(" Invalid Time");
+	}
+	else if (valid !== 5) {
+		$("#message").html(" Invalid Time");
+	}
+	else if (inputFrequency === "") {
+		$("#message").html(" Enter Frequency");
+	}
+	else if (freq !== inputFrequency.length) {
+		$("#message").html(" Invalid Frequency");
+	}
 	else {
 		database.ref().push({
     name: inputName,
