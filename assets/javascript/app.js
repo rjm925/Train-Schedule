@@ -1,6 +1,8 @@
-var numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+// Array of numbers to validate time
+const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
-var config = {
+// Inialize database
+const config = {
   apiKey: "AIzaSyCPvZTavp6MmsbPb_rf0708V-AlLiMBIMY",
   authDomain: "test-1379e.firebaseapp.com",
   databaseURL: "https://test-1379e.firebaseio.com",
@@ -10,29 +12,38 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var database = firebase.database();
-var inputName = "";
-var inputDestination = "";
-var inputFrequency = "";
-var inputTime = "";
+const database = firebase.database();
 
+let inputName = "";						// Name holder
+let inputDestination = "";		// Destination holder
+let inputFrequency = "";			// Frequency holder
+let inputTime = "";						// Time holder
+
+// Click event to add train to schedule
 $("#addTrain").on("click", function(event) {
+	// Prevent page reloading on click
 	event.preventDefault();
 
+	// Get input values
 	inputName = $("#train-name").val().trim();
 	inputDestination = $("#train-destination").val().trim();
 	inputFrequency = $("#train-frequency").val().trim();
 	inputTime = $("#train-time").val().trim();
 
-	var valid = 0;
-	for (var i = 0; i < inputTime.length; i++) {
+	// Check input time
+	let valid = 0;
+	// Loop through each char of inputTime
+	for (let i = 0; i < inputTime.length; i++) {
+		// Checks if third char is :
 		if (i === 2) {
 			if (inputTime[2] === ":") {
 				valid++;
 			}
 		}
+		// Handles rest of string
 		else {
-			for (var j = 0; j < numbers.length; j++) {
+			for (let j = 0; j < numbers.length; j++) {
+				// Check if number
 				if (inputTime[i] === numbers[j]) {
 					valid++;
 				}
@@ -40,15 +51,17 @@ $("#addTrain").on("click", function(event) {
 		}
 	}
 
-	var freq = 0;
-	for (var i = 0; i < inputFrequency.length; i++) {
-		for (var j = 0; j < numbers.length; j++) {
+	// Check if frequency input is number
+	let freq = 0;
+	for (let i = 0; i < inputFrequency.length; i++) {
+		for (let j = 0; j < numbers.length; j++) {
 			if (inputFrequency[i] === numbers[j]) {
 				freq++;
 			}
 		}
 	}
 
+	// Validation and displays error corresponding error message
 	if (inputName === ""){
 		$("#message").html(" Enter Name");
 	}
@@ -70,7 +83,9 @@ $("#addTrain").on("click", function(event) {
 	else if (freq !== inputFrequency.length) {
 		$("#message").html(" Invalid Frequency");
 	}
+	// Valid input
 	else {
+		// Add information to database
 		database.ref().push({
     name: inputName,
     destination: inputDestination,
@@ -79,6 +94,7 @@ $("#addTrain").on("click", function(event) {
     dateAdded: firebase.database.ServerValue.TIMESTAMP
   });
 
+		// Clears input fields
 		$("#train-name").val("");
 		$("#train-destination").val("");
 		$("#train-frequency").val("");
@@ -86,6 +102,7 @@ $("#addTrain").on("click", function(event) {
 	}
 });
 
+// Calculates next incoming train
 function incomingTrain(firstTime, tfrequency) {
 	var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
   // Difference between the times
@@ -98,6 +115,7 @@ function incomingTrain(firstTime, tfrequency) {
   nextTrain = moment().add(arrival, "minutes");
 }
 
+// Adds new row to table
 function addRow(name, destination, frequency) {
 	var newRow = $("<tr>");
 	var newName = $("<td>");
@@ -118,6 +136,7 @@ function addRow(name, destination, frequency) {
 	$("#trainSchedule").append(newRow);
 }
 
+// Calculates next train and displays on table
 database.ref().orderByChild("dateAdded").on("child_added", function(snapshot) {
   // storing the snapshot.val() in a variable for convenience
   var sv = snapshot.val();
